@@ -35,13 +35,49 @@ public class GatewayRoutes {
      * 访问http://localhost:8080/kid/crm/api/hello 会被转发到http://localhost:8085/api/hello
      * 访问http://localhost:8080/kid/crm/api/second 会被转发到http://localhost:8085/api/second
      */
-    @Bean
+/*    @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r ->
                         r.path("/kid/crm/**")
                                 .filters(f -> f.stripPrefix(2))
                                 .uri("http://localhost:8085")
+                )
+                .build();
+    }
+
+    */
+
+    /**
+     * 访问 http://localhost:9527/news/inside  转发到  http://news.baidu.com/guonei
+     * <p>
+     * http://localhost:9527/news/mil   http://news.baidu.com/mil
+     * <p>
+     * http://localhost:9527/news/guoji  http://news.baidu.com/guoji
+     * <p>
+     * stripPrefix(int num) 指的是会剥离掉num数量个前缀 将剩下的拼接到uri后面
+     */
+
+    @Bean
+    public RouteLocator linkToBd(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route("rout_1", r ->
+                        r.path("/news/**")
+                                .filters(f -> f.stripPrefix(1))
+                                .uri("http://news.baidu.com/")
+                )
+                .build();
+    }
+
+    /**
+     * 将http://localhost:9527/hello/**  转发到http://localhost:8080/hello/**
+     */
+    @Bean
+    public RouteLocator routeLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route(r ->
+                        r.path("/hello/**")
+                                .uri("http://localhost:8080")
                 )
                 .build();
     }

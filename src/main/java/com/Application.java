@@ -17,9 +17,4 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @ResponseBody
-    @GetMapping(value = "/hello")
-    String welcome() {
-        return "hello world i am nginx load balacne~";
-    }
 }
