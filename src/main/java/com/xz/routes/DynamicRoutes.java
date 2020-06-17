@@ -1,7 +1,7 @@
 package com.xz.routes;
 
-import com.xz.filters1.HeaderGatewayFilterFactory;
-import com.xz.filters1.ParamsGatewayFilterFactory;
+import com.xz.filters.HeaderGatewayFilterFactory;
+import com.xz.filters.ParamsGatewayFilterFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;

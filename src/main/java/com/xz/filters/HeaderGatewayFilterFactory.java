@@ -1,4 +1,4 @@
-package com.xz.filters1;
+package com.xz.filters;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
