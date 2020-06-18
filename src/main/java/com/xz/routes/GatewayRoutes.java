@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/6/5 15:06
  **/
 
-@Configuration
+//@Configuration
 public class GatewayRoutes {
 
     /**

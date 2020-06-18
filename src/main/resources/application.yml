@@ -1,3 +1,22 @@
-server:
-  port: 9527
+server.port: 9527
+spring:
+  application:
+    name: gatewayexample
 
+# 配置输出日志
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.ipc.netty: DEBUG
+
+#开启端点
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
