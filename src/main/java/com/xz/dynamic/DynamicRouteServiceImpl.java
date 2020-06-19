@@ -1,7 +1,11 @@
 package com.xz.dynamic;
 
+import com.xz.dao.GateWayMapper;
+import com.xz.entity.GateWayInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
+import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
 import org.springframework.cloud.gateway.support.NotFoundException;
@@ -11,6 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.util.List;
+
+@Slf4j
 @Service
 public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
     @Autowired
@@ -18,10 +26,20 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
 
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private GateWayMapper gateWayMapper;
+
     //增加路由
     public String add(RouteDefinition definition) {
         routeDefinitionWriter.save(Mono.just(definition)).subscribe();
         this.publisher.publishEvent(new RefreshRoutesEvent(this));
+        List<PredicateDefinition> predicates = definition.getPredicates();
+        String pattern = definition.getPredicates().get(0).getArgs().get("pattern");
+        GateWayInfo gateWayInfo = new GateWayInfo();
+        URI uri = definition.getUri();
+        gateWayInfo.setRedirectUrl(uri.getScheme() +"://"+ uri.getHost());
+        gateWayInfo.setRequestPath(pattern);
+        gateWayMapper.insert(gateWayInfo);
         return "success";
     }
 

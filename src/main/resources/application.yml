@@ -2,6 +2,15 @@ server.port: 9527
 spring:
   application:
     name: gatewayexample
+  datasource:
+    url: jdbc:mysql://localhost:3306/plus?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # 配置输出日志
 logging:
