@@ -12,4 +12,5 @@ public class GateWayInfo {
     private Long id;
     private String requestPath;
     private String redirectUrl;
+    private String routeName;
 }

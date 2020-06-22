@@ -1,5 +1,6 @@
 package com.xz.dynamic;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xz.dao.GateWayMapper;
 import com.xz.entity.GateWayInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,8 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
         String pattern = definition.getPredicates().get(0).getArgs().get("pattern");
         GateWayInfo gateWayInfo = new GateWayInfo();
         URI uri = definition.getUri();
-        gateWayInfo.setRedirectUrl(uri.getScheme() +"://"+ uri.getHost());
+        gateWayInfo.setRouteName(definition.getId());
+        gateWayInfo.setRedirectUrl(uri.getScheme() + "://" + uri.getHost());
         gateWayInfo.setRequestPath(pattern);
         gateWayMapper.insert(gateWayInfo);
         return "success";
@@ -53,6 +55,15 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
         try {
             routeDefinitionWriter.save(Mono.just(definition)).subscribe();
             this.publisher.publishEvent(new RefreshRoutesEvent(this));
+            GateWayInfo gateWayInfo = new GateWayInfo();
+            URI uri = definition.getUri();
+            gateWayInfo.setRedirectUrl(uri.getScheme() + "://" + uri.getHost());
+            List<PredicateDefinition> predicates = definition.getPredicates();
+            String pattern = definition.getPredicates().get(0).getArgs().get("pattern");
+            gateWayInfo.setRequestPath(pattern);
+            QueryWrapper<GateWayInfo> queryWrapper = new QueryWrapper<GateWayInfo>().eq("route_name", definition.getId());
+
+            gateWayMapper.update(gateWayInfo, queryWrapper);
             return "success";
         } catch (Exception e) {
             return "update route fail";
