@@ -39,7 +39,8 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
         GateWayInfo gateWayInfo = new GateWayInfo();
         URI uri = definition.getUri();
         gateWayInfo.setRouteName(definition.getId());
-        gateWayInfo.setRedirectUrl(uri.getScheme() + "://" + uri.getHost());
+        //gateWayInfo.setRedirectUrl(uri.getScheme() + "://" + uri.getHost());
+        gateWayInfo.setRedirectUrl(uri.toString());
         gateWayInfo.setRequestPath(pattern);
         gateWayMapper.insert(gateWayInfo);
         return "success";

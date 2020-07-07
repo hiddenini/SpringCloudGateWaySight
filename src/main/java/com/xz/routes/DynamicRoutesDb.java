@@ -29,7 +29,7 @@ public class DynamicRoutesDb implements RouteLocator {
     private GateWayMapper gateWayMapper;
 
     /**
-     * 为每一种请求路径配置一个filter(也可以有多个)
+     * 为每一种请求路径配置一个filter(也可以有多个)   难道只能转发到域名上面去?或者服务治理的前缀
      */
     @Override
     public Flux<Route> getRoutes() {
@@ -38,7 +38,9 @@ public class DynamicRoutesDb implements RouteLocator {
         gateWayInfos.stream().forEach(gateWayInfo -> {
             routes.route(r ->
                             r.path(gateWayInfo.getRequestPath())
+                                    //.filters(f -> f.stripPrefix(1))
 //                            .filters(f -> f.filter(headerGatewayFilterFactory.apply(new Object())))
+                                    //.filters(f -> f.filter(unionResultGatewayFilterFactory.apply(new ModifyResponseBodyGatewayFilterFactory.Config())))
                                     .uri(gateWayInfo.getRedirectUrl())
             ).build();
         });
