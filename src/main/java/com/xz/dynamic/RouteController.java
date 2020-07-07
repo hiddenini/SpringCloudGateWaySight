@@ -32,8 +32,8 @@ public class RouteController {
     }
 
     //删除路由
-    @DeleteMapping("/routes/{id}")
-    public Mono<ResponseEntity<Object>> delete(@PathVariable String id) {
+    @DeleteMapping("/delete")
+    public Mono<ResponseEntity<Object>> delete(@RequestParam String id) {
         return this.dynamicRouteService.delete(id);
     }
 

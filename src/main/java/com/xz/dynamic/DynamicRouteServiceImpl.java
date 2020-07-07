@@ -72,9 +72,14 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware {
 
     //删除路由
     public Mono<ResponseEntity<Object>> delete(String id) {
-        return this.routeDefinitionWriter.delete(Mono.just(id))
+        QueryWrapper<GateWayInfo> queryWrapper = new QueryWrapper<GateWayInfo>().eq("route_name", id);
+        gateWayMapper.delete(queryWrapper);
+        this.routeDefinitionWriter.delete(Mono.just(id)).subscribe();
+        this.publisher.publishEvent(new RefreshRoutesEvent(this));
+/*        return this.routeDefinitionWriter.delete(Mono.just(id))
                 .then(Mono.defer(() -> Mono.just(ResponseEntity.ok().build())))
-                .onErrorResume(t -> t instanceof NotFoundException, t -> Mono.just(ResponseEntity.notFound().build()));
+                .onErrorResume(t -> t instanceof NotFoundException, t -> Mono.just(ResponseEntity.notFound().build()));*/
+        return null;
     }
 
     @Override
