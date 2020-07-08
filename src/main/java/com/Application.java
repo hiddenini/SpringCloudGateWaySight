@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author xz
  * @date 2020/6/5 15:03
  **/
-@SpringBootApplication
+@SpringBootApplication()
 @MapperScan("com.xz.dao*")
 public class Application {
     public static void main(String[] args) {
