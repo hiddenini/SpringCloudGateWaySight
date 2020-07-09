@@ -18,10 +18,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * 拿到请求的body
+ * <p>
  * 这种是ok的 配合DynamicRoutesDb中的 .filters(f -> f.filter(postFilter.apply(new AbstractNameValueGatewayFilterFactory.NameValueConfig())))使用
  */
 //@Component
-public class PostFilter extends AbstractNameValueGatewayFilterFactory {
+public class AnotherEncryptRequestBodyFilter extends AbstractNameValueGatewayFilterFactory {
 
     @Override
     public GatewayFilter apply(NameValueConfig nameValueConfig) {
@@ -29,7 +31,7 @@ public class PostFilter extends AbstractNameValueGatewayFilterFactory {
             URI uri = exchange.getRequest().getURI();
             URI ex = UriComponentsBuilder.fromUri(uri).build(true).toUri();
             ServerHttpRequest request = exchange.getRequest().mutate().uri(ex).build();
-            if("POST".equalsIgnoreCase(request.getMethodValue())){//判断是否为POST请求
+            if ("POST".equalsIgnoreCase(request.getMethodValue())) {//判断是否为POST请求
                 Flux<DataBuffer> body = request.getBody();
                 AtomicReference<String> bodyRef = new AtomicReference<>();//缓存读取的request body信息
                 body.subscribe(dataBuffer -> {
@@ -42,7 +44,7 @@ public class PostFilter extends AbstractNameValueGatewayFilterFactory {
                 DataBuffer bodyDataBuffer = stringBuffer(bodyStr);
                 Flux<DataBuffer> bodyFlux = Flux.just(bodyDataBuffer);
 
-                request = new ServerHttpRequestDecorator(request){
+                request = new ServerHttpRequestDecorator(request) {
                     @Override
                     public Flux<DataBuffer> getBody() {
                         return bodyFlux;

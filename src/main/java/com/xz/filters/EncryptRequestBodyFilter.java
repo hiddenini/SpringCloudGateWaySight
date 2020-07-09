@@ -1,5 +1,6 @@
 package com.xz.filters;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xz.rewrite.MyCachedBodyOutputMessage;
@@ -22,13 +23,16 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+
 /**
+ * 拿到请求的body
+ * <p>
  * 这种也是ok的
  */
 
 @Slf4j
-@Component
-public class ValidateFilter implements GlobalFilter, Ordered {
+//@Component
+public class EncryptRequestBodyFilter implements GlobalFilter, Ordered {
 
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         /**
@@ -48,15 +52,10 @@ public class ValidateFilter implements GlobalFilter, Ordered {
          */
         Map<String, Object> cachedRequestBodyObject = exchange.getAttribute("cachedRequestBodyObject");
         log.info("cachedRequestBodyObject:{}", cachedRequestBodyObject);
-        ObjectMapper mapper = new ObjectMapper();
         AtomicReference<String> atomicReference = new AtomicReference<>();
-        try {
-            String json = mapper.writeValueAsString(cachedRequestBodyObject);
-            atomicReference.set(json);
-            log.info("json:{}", json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        String json = JSON.toJSONString(cachedRequestBodyObject);
+        atomicReference.set(json);
+        log.info("json:{}", json);
 /*        cachedRequestBodyObject.forEach((String s, Object obj) -> {
             log.info("key:{},value:{}", s, obj);
         });*/
