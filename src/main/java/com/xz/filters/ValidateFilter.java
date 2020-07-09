@@ -1,5 +1,7 @@
 package com.xz.filters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -20,6 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 这种也是ok的
@@ -31,23 +34,48 @@ public class ValidateFilter implements GlobalFilter, Ordered {
 
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerRequest serverRequest = new DefaultServerRequest(exchange);
+        /**
+         * ReadBodyPredicateFactory ，发现里面缓存了request body的信息，于是在自定义router中配置了ReadBodyPredicateFactory
+         *
+         * 然后在filter中通过cachedRequestBodyObject缓存字段获取request body信息，这种解决，
+         *
+         * 一不会带来重复读取问题
+         *
+         * 二不会带来requestBody取不全问题。
+         *
+         * 三在低版本的Spring Cloud Finchley.SR2也可以运行
+         */
         Map<String, Object> cachedRequestBodyObject = exchange.getAttribute("cachedRequestBodyObject");
         log.info("cachedRequestBodyObject:{}", cachedRequestBodyObject);
-        //cachedRequestBodyObject.forEach(String );
+        ObjectMapper mapper = new ObjectMapper();
+        AtomicReference<String> atomicReference = new AtomicReference<>();
+        try {
+            String json = mapper.writeValueAsString(cachedRequestBodyObject);
+            atomicReference.set(json);
+            log.info("json:{}", json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        cachedRequestBodyObject.forEach((String s, Object obj) -> {
+            log.info("key:{},value:{}", s, obj);
+        });
         // mediaType
         MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
-        // read & modify body
-        Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
+        // read & modify body 直接将serverRequest中的body包装成新的request
+/*        Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
                 .flatMap(body -> {
                     log.info("ValidateFilter body:{}", body);
                     return Mono.just(body);
-                });
+                });*/
 
-/*        Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
+        /**
+         * 将cachedRequestBodyObject作为requestBody传递包装成新的request
+         */
+        Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
                 .flatMap(body -> {
                     log.info("ValidateFilter cachedRequestBodyObject:{}", body);
-                    return Mono.just(String.valueOf(cachedRequestBodyObject));
-                });*/
+                    return Mono.just(atomicReference.get());
+                });
 
         BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
         HttpHeaders headers = new HttpHeaders();
