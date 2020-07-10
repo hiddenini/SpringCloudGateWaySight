@@ -22,6 +22,10 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * see ModifyResponseBodyGatewayFilterFactory
+ */
+
 @Slf4j
 @Component
 public class EncryptResponseGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
@@ -86,6 +90,7 @@ public class EncryptResponseGatewayFilterFactory extends AbstractGatewayFilterFa
 
         /**
          * NettyWriteResponseFilter  的order是-1,这里的order要比-1小才行 如果是0则不生效了
+         *
          * @return
          */
         @Override

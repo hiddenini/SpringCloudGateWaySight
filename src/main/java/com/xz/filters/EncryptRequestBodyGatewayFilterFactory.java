@@ -5,6 +5,7 @@ import com.xz.rewrite.MyCachedBodyOutputMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.cloud.gateway.support.AbstractConfigurable;
 import org.springframework.cloud.gateway.support.BodyInserterContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -21,6 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 将EncryptRequestBodyFilter形式修改由GlobalFilter修改为AbstractGatewayFilterFactory形式，这样后面可以为指定的请求设置而不是所有的请求都拦截
+ *
+ * see  ModifyRequestBodyGatewayFilterFactory
  */
 @Slf4j
 @Component
