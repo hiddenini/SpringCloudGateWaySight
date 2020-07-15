@@ -19,12 +19,16 @@ public class RouteController {
     @Autowired
     private DynamicRouteServiceImpl dynamicRouteService;
 
+    @Autowired
+    private DynamicRouteServiceImplDb dynamicRouteServiceDb;
+
     //增加路由
     @PostMapping("/add")
     public String add(@RequestBody GatewayRouteDefinition gwdefinition) {
         try {
             RouteDefinition definition = assembleRouteDefinition(gwdefinition);
-            return this.dynamicRouteService.add(definition);
+            //return this.dynamicRouteService.add(definition);
+            return dynamicRouteServiceDb.add(definition);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,14 +38,16 @@ public class RouteController {
     //删除路由
     @DeleteMapping("/delete")
     public Mono<ResponseEntity<Object>> delete(@RequestParam String id) {
-        return this.dynamicRouteService.delete(id);
+        //return this.dynamicRouteService.delete(id);
+        return this.dynamicRouteServiceDb.delete(id);
     }
 
     //更新路由
     @PostMapping("/update")
     public String update(@RequestBody GatewayRouteDefinition gwdefinition) {
         RouteDefinition definition = assembleRouteDefinition(gwdefinition);
-        return this.dynamicRouteService.update(definition);
+        //return this.dynamicRouteService.update(definition);
+        return this.dynamicRouteServiceDb.update(definition);
     }
 
     private RouteDefinition assembleRouteDefinition(GatewayRouteDefinition gwdefinition) {
@@ -53,7 +59,7 @@ public class RouteController {
 
         // Predicates
         List<PredicateDefinition> pdList = new ArrayList<>();
-        for (GatewayPredicateDefinition gpDefinition: gwdefinition.getPredicates()) {
+        for (GatewayPredicateDefinition gpDefinition : gwdefinition.getPredicates()) {
             PredicateDefinition predicate = new PredicateDefinition();
             predicate.setArgs(gpDefinition.getArgs());
             predicate.setName(gpDefinition.getName());
@@ -63,7 +69,7 @@ public class RouteController {
 
         // Filters
         List<FilterDefinition> fdList = new ArrayList<>();
-        for (GatewayFilterDefinition gfDefinition: gwdefinition.getFilters()) {
+        for (GatewayFilterDefinition gfDefinition : gwdefinition.getFilters()) {
             FilterDefinition filter = new FilterDefinition();
             filter.setArgs(gfDefinition.getArgs());
             filter.setName(gfDefinition.getName());
