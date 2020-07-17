@@ -81,9 +81,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * 在访问/actuator/gateway/routes时既执行了DynamicRoutesDb.getRoutes() 也执行了RouteDefinitionRouteLocator.getRoutes() 但是后续比如add时如何调用的这2个
  * <p>
  * RouteLocator暂时还不清楚 add的时候 this.publisher.publishEvent(new RefreshRoutesEvent(this));发布了一个 RefreshRoutesEvent事件，相关的监听类是
- *
+ * <p>
  * CachingRouteDefinitionLocator 以及WeightCalculatorWebFilter
- *
+ * <p>
  * TODO 这2个RouteLocator到底是如何被调用的以及add时为什么没有打印DynamicRoutesDb中的  log.info("enter DynamicRoutesDb")?
  * <p>
  * <p>
@@ -162,6 +162,12 @@ public class DynamicRoutesDb implements RouteLocator, ApplicationEventPublisherA
      * DispatcherHandler：所有请求的调度器，负载请求分发
      * RoutePredicateHandlerMapping:路由谓语匹配器，用于路由的查找，以及找到路由后返回对应的WebHandler，DispatcherHandler会依次遍历HandlerMapping集合进行处理
      * FilteringWebHandler : 使用Filter链表处理请求的WebHandler，RoutePredicateHandlerMapping找到路由后返回对应的FilteringWebHandler对请求进行处理，FilteringWebHandler负责组装Filter链表并调用链表处理请求。
+     * <p>
+     * 转发路由时默认使用的是netty  先在NettyRoutingFilter将CLIENT_RESPONSE_CONN_ATTR put exchange.getAttributes().put(CLIENT_RESPONSE_CONN_ATTR, connection);
+     * <p>
+     * 然后在NettyWriteResponseFilter中     	Connection connection = exchange.getAttribute(CLIENT_RESPONSE_CONN_ATTR);
+     * <p>
+     * 拿到对应的connection进行连接  使用的是reactor-netty的东西
      */
     @Override
     public Flux<Route> getRoutes() {
