@@ -93,6 +93,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>
  * 方式一相比会麻烦一些,并且使用默认的InMemoryRouteDefinitionRepository在集群环境下可能会有问题,需要自定义.并且方式一设置predicate和filters时比较麻烦
  * <p>
+ * 理解那个lambda 看下CachingRouteLocator refresh();
+ * <p>
  */
 
 
